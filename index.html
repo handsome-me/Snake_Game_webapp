@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Canvas tutorial</title>
+    <script>
+      let x = 5;
+      const snakeBoxWidth = 12,
+        snakeBoxheight = 12;
+
+      var ctx;
+      let reachedBorder = false;
+      function draw() {
+        var canvas = document.getElementById("tutorial");
+        if (canvas.getContext) {
+          ctx = canvas.getContext("2d");
+          ctx.fillRect(x, 5, snakeBoxWidth, snakeBoxheight);
+        }
+      }
+      function checkIfSnakeReahcedTheBorder() {
+        if (x == 125) {
+          //yes reached the border
+          reachedBorder = true;
+        } else if (x === 5) {
+          reachedBorder = false;
+        }
+      }
+
+      function gameLoop() {
+        draw();
+        setInterval(() => {
+          console.log("gaming loop setInterval()", x);
+          ctx.clearRect(x, 5, 20, 20);
+          checkIfSnakeReahcedTheBorder();
+          if (!reachedBorder) {
+            x = x + 5;
+          } else {
+            x = x - 5;
+          }
+          draw();
+        }, 1000);
+      }
+    </script>
+    <style>
+      canvas {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body onload="gameLoop();">
+    <canvas id="tutorial" width="150" height="150"></canvas>
+  </body>
+</html>
