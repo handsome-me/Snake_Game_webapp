@@ -5,16 +5,49 @@
     <title>Canvas tutorial</title>
     <script>
       let x = 5;
+      let y = 5;
       const snakeBoxWidth = 12,
         snakeBoxheight = 12;
+      const snakeBoxes = Array(5);
+      const snakeBody = [
+        { xAxis: 5, yAxis: 20 },
+        { xAxis: 10, yAxis: 20 },
+        { xAxis: 15, yAxis: 20 },
+        { xAxis: 20, yAxis: 20 },
+        { xAxis: 25, yAxis: 20 },
+        { xAxis: 30, yAxis: 20 },
 
+      ];
       var ctx;
+      var canvas;
       let reachedBorder = false;
+      //for moving the snake down
+      let movedown = false;
+      let countMove = 0;
+     let moveRight=false;
+      let moveUp=false;
+       let dx=10;
+       let dy=0;
+      let t3 = 0;
+      const turningPoint = 0;
+      //end
+
       function draw() {
-        var canvas = document.getElementById("tutorial");
+        for (let i = 0; i < snakeBody.length; i++) {
+          drawSingle(snakeBody[i]);
+        }
+      }
+      function drawSingle(snakeCoordinate) {
+        console.log("xAxis", snakeCoordinate);
+        let canvas = document.getElementById("tutorial");
         if (canvas.getContext) {
           ctx = canvas.getContext("2d");
-          ctx.fillRect(x, 5, snakeBoxWidth, snakeBoxheight);
+          ctx.fillRect(
+            snakeCoordinate.xAxis,
+            snakeCoordinate.yAxis,
+            snakeBoxWidth,
+            snakeBoxheight
+          );
         }
       }
       function checkIfSnakeReahcedTheBorder() {
@@ -26,20 +59,145 @@
         }
       }
 
+      function clearSnake() {
+        ctx.clearRect(0, 0, 150, 150);
+      }
       function gameLoop() {
+
+        document.addEventListener("keydown", change_direction);
+
         draw();
+
         setInterval(() => {
           console.log("gaming loop setInterval()", x);
-          ctx.clearRect(x, 5, 20, 20);
+          //clearSnake();
           checkIfSnakeReahcedTheBorder();
-          if (!reachedBorder) {
-            x = x + 5;
-          } else {
-            x = x - 5;
-          }
+          // if (!reachedBorder) {
+          //   x = x + 5;
+          // } else {
+          //   x = x - 5;
+          // }
+          clearSnake();
+          // if (countMove === snakeBody.length) {
+          //   // movedown = false;
+          //   // countMove = 0;
+          // }
+          // if (movedown || moveUp) {
+          //   countMove++;
+          //   increaseSnakeBodyYaxis();
+          // } else if(moveRight){
+          //   countMove++;
+          //   console.log("moveRight");
+          //   rightTurnSnake();
+          // }else{
+          //   increaseSnakeBodyXaxis();
+          // }
+          move_snake("H");
           draw();
-        }, 1000);
+        }, 200);
+        function increaseSnakeBodyXaxis() {
+          for (let i = 0; i < snakeBody.length; i++) {
+            snakeBody[i].xAxis =count(snakeBody[i].xAxis)
+          }
+        }
+
+        function increaseSnakeBodyYaxis() {   
+          const t1 = snakeBody.length - countMove;
+          for (let i = 0; i < snakeBody.length; i++) {
+            if (i>=t1){
+              snakeBody[i].yAxis = count(snakeBody[i].yAxis);
+            } else {
+              snakeBody[i].xAxis =snakeBody[i].xAxis+5
+            }
+          }
+        }
+        function rightTurnSnake() {  
+          console.log("#121","countMove",countMove); 
+          const t1 = snakeBody.length - countMove;
+          for (let i = 0; i < snakeBody.length; i++) {
+            if (i>=t1){
+              snakeBody[i].xAxis = count(snakeBody[i].xAxis);
+            } else {
+              snakeBody[i].yAxis =snakeBody[i].yAxis+5
+            }
+          }
+        }
+    function move_snake(direction) 
+{  
+  const head = {xAxis: snakeBody[0].xAxis+ dx, yAxis: snakeBody[0].yAxis + dy};
+  snakeBody.unshift(head);
+  snakeBody.pop();
+}
+
       }
+      function  count(x){
+       if(moveUp){
+        x=x-5;
+       }else if(movedown){
+         x=x+5;
+       }else if(moveRight){
+         x=x+5;
+       }else{
+         x=x+5;
+       } 
+       return x;
+      }
+      function change_direction(e){
+         console.log("#121",e.key);
+
+         switch(e.key){
+           case "ArrowDown":{
+              handleMoveDownPress();
+              break;
+           }
+           case "ArrowUp":{
+             handleMoveUpPress();
+             break;
+            }
+            case "ArrowLeft":{
+             handleMoveLeftPress();
+             break;
+            }
+            case "ArrowRight":{
+             handleMoveRightPress();
+             break;
+            }
+         }
+      }
+      function handleMoveDownPress() {
+        console.log("#121", "moveDown is pressed.....");
+        movedown = true;
+        moveUp=false;
+        moveRight=false;
+        countMove=0;
+        dx = 0;
+        dy = 10;
+      }
+      function handleMoveUpPress() {
+        console.log("#121", "moveDown is pressed.....");
+        movedown = false;
+       moveUp=true;
+       countMove=0;
+       dx = 0;
+        dy = -10;
+
+      }
+      function handleMoveRightPress(){
+      console.log("#121","moveRight is pressed");
+      moveUp=false;
+      movedown=false;
+      moveRight=true;
+      countMove=0;
+      dx = 10;
+        dy = 0;
+      }
+
+      function handleMoveLeftPress(){
+        dx = -10;
+        dy = 0;
+      }
+
+
     </script>
     <style>
       canvas {
@@ -48,6 +206,23 @@
     </style>
   </head>
   <body onload="gameLoop();">
-    <canvas id="tutorial" width="150" height="150"></canvas>
+    <canvas id="tutorial" width="150" height="150"> </canvas>
+    <div class="buttonContainer" style="width:150px;justify-content:center;position: relative;display: flex;">
+     <div style="align-self: center;">
+      <button onclick="handleMoveLeftPress()"  name="left">&#8592</button>
+     </div>
+     <div style="display: flex;flex-direction: column;">
+      <button  onclick="handleMoveUpPress()" name="up">&#8593</button>
+      <button onclick="handleMoveDownPress()" name="down">&#8595</button>
+    </div>
+    <div style="align-self: center;">
+      <button onclick="handleMoveRightPress()" name="right">&#8594</button>
+    </div>
+      </div>
+    </div>     
+    <div>
+
+    </div>
+      </div>
   </body>
 </html>
