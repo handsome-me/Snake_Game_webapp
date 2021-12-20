@@ -6,8 +6,10 @@
     <script>
       let x = 5;
       let y = 5;
-      const snakeBoxWidth = 12,
-        snakeBoxheight = 12;
+      const snakeBoxWidth = 10,
+        snakeBoxheight = 10;
+        let canvas=null;
+        let ctx =null;
       const snakeBoxes = Array(5);
       const snakeBody = [
         { xAxis: 5, yAxis: 20 },
@@ -18,8 +20,7 @@
         { xAxis: 30, yAxis: 20 },
 
       ];
-      var ctx;
-      var canvas;
+       
       let reachedBorder = false;
       //for moving the snake down
       let movedown = false;
@@ -30,25 +31,50 @@
        let dy=0;
       let t3 = 0;
       const turningPoint = 0;
+      let foodCoordinate={}
+      let changing_direction = false;
       //end
+    let hit=true;
+      function gen_food_on_random_location(){
+        
+        foodCoordinate={
+          xAxis:Math.round((Math.random() * (350-0) + 0) / 10) * 10,
+          yAxis:Math.round((Math.random() * (350-0) + 0) / 10) * 10
+        }
+      }
 
+      function makeFood(){   
+        drawFood(foodCoordinate.xAxis,foodCoordinate.yAxis)
+        console.log("#121","food",foodCoordinate);
+         
+      }
       function draw() {
         for (let i = 0; i < snakeBody.length; i++) {
           drawSingle(snakeBody[i]);
         }
       }
-      function drawSingle(snakeCoordinate) {
-        console.log("xAxis", snakeCoordinate);
-        let canvas = document.getElementById("tutorial");
-        if (canvas.getContext) {
-          ctx = canvas.getContext("2d");
+      function drawSingle(snakeCoordinate) { 
+         //ctx.fillStyle ="green";
+      // Set the border colour of the snake part
+//       var grd = ctx.createLinearGradient(0, 0, 170, 0);
+// grd.addColorStop(0, "yellow");
+// grd.addColorStop(0.5, "green");
+// grd.addColorStop(1, "pink");
+// ctx.fillStyle = grd;
+ctx.fillStyle = 'pink';
+      ctx.strokestyle = 'black';
           ctx.fillRect(
             snakeCoordinate.xAxis,
             snakeCoordinate.yAxis,
             snakeBoxWidth,
             snakeBoxheight
           );
-        }
+          ctx.strokeRect(snakeCoordinate.xAxis, snakeCoordinate.yAxis, snakeBoxWidth, snakeBoxheight);
+         
+
+// Fill with gradient
+ 
+        
       }
       function checkIfSnakeReahcedTheBorder() {
         if (x == 125) {
@@ -59,18 +85,38 @@
         }
       }
 
+      function drawFood(x,y)
+{
+      ctx.fillStyle = 'lightgreen';
+      ctx.strokestyle = 'black';
+      ctx.fillRect(x, y, snakeBoxWidth, snakeBoxheight);
+      ctx.strokeRect(x,y, snakeBoxWidth,snakeBoxheight);
+}
+
       function clearSnake() {
-        ctx.clearRect(0, 0, 150, 150);
+        //ctx.clearRect(0, 0, 150, 150);
+         //  Select the colour to fill the drawing
+      ctx.fillStyle = "white"//board_background;
+      //  Select the colour for the border of the canvas
+      //ctx.strokestyle = ;
+      // Draw a "filled" rectangle to cover the entire canvas
+       ctx.fillRect(0, 0,canvas.width,canvas.height);
+      // Draw a "border" around the entire canvas
+       ctx.strokeRect(0, 0, canvas.width,canvas.height);
       }
       function gameLoop() {
-
+         canvas = document.getElementById("tutorial");
+        ctx = canvas.getContext("2d");
         document.addEventListener("keydown", change_direction);
 
         draw();
-
+        // setInterval(function makeFoodOnBoard(){
+        //   makeFood();
+        // },1000)
         setInterval(() => {
           console.log("gaming loop setInterval()", x);
           //clearSnake();
+          changing_direction = false;
           checkIfSnakeReahcedTheBorder();
           // if (!reachedBorder) {
           //   x = x + 5;
@@ -92,9 +138,11 @@
           // }else{
           //   increaseSnakeBodyXaxis();
           // }
+          makeFood()
           move_snake("H");
           draw();
-        }, 200);
+          hit=false;
+        }, 100);
         function increaseSnakeBodyXaxis() {
           for (let i = 0; i < snakeBody.length; i++) {
             snakeBody[i].xAxis =count(snakeBody[i].xAxis)
@@ -127,6 +175,9 @@
   const head = {xAxis: snakeBody[0].xAxis+ dx, yAxis: snakeBody[0].yAxis + dy};
   snakeBody.unshift(head);
   snakeBody.pop();
+  if(hit){
+    gen_food_on_random_location();
+  }
 }
 
       }
@@ -144,7 +195,9 @@
       }
       function change_direction(e){
          console.log("#121",e.key);
-
+          
+       if( changing_direction )return;
+       changing_direction = true;
          switch(e.key){
            case "ArrowDown":{
               handleMoveDownPress();
@@ -206,7 +259,7 @@
     </style>
   </head>
   <body onload="gameLoop();">
-    <canvas id="tutorial" width="150" height="150"> </canvas>
+    <canvas id="tutorial" width="400" height="400"> </canvas>
     <div class="buttonContainer" style="width:150px;justify-content:center;position: relative;display: flex;">
      <div style="align-self: center;">
       <button onclick="handleMoveLeftPress()"  name="left">&#8592</button>
