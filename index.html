@@ -48,6 +48,14 @@
         console.log("#121","food",foodCoordinate);
          
       }
+
+      function doesSnakeEatFood(head){
+        console.log("#131","doesSnake",head,"--foodcoordinate--",foodCoordinate);
+        if(foodCoordinate.xAxis === head.xAxis+5 && foodCoordinate.yAxis===head.yAxis){
+          console.log("#121","yesSnakeEatFood");
+          return true;
+        }else false;
+      }
       function draw() {
         for (let i = 0; i < snakeBody.length; i++) {
           drawSingle(snakeBody[i]);
@@ -171,12 +179,21 @@ ctx.fillStyle = 'pink';
           }
         }
     function move_snake(direction) 
-{  
+ {  
   const head = {xAxis: snakeBody[0].xAxis+ dx, yAxis: snakeBody[0].yAxis + dy};
   snakeBody.unshift(head);
   snakeBody.pop();
+  const doesSnake=doesSnakeEatFood(head);
+     if(doesSnake){
+       snakeBody.push({
+         xAxis:snakeBody[snakeBody.length-1].xAxis-5,
+         yAxis:snakeBody[snakeBody.length-1].yAxis
+       })
+       hit=true;
+     }
   if(hit){
     gen_food_on_random_location();
+    hit=false;
   }
 }
 
